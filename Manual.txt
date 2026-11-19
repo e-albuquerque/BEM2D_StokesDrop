@@ -1,0 +1,93 @@
+MANUAL TO USE THE PROGRAM SIMULATING THE FLOW OF A DROP
+
+ENTERING THE INPUT FILE NAME 
+
+-Inside of Ceate_Mesh_2D file, there is a .dat file called file_name.
+
+-This file contains the name of the file you will enter the parameters of the simulation (input file). 
+ Ex.: dad_1
+ You should not put the extension of the input file name.
+ Your input file must be a .txt file.
+
+WRITING YOUR INPUT FILE
+
+-Take as exemple the dad_1.txt file that is already in Create_Mesh_2D.
+
+-The very first information you should enter in this file are the number of points that compouse your outer contours (not including the drops contours),
+the number of segments on this contour and the number of drops you have on your problem. This should be the second line of your .txt file.
+
+-skip a line
+
+ENTERING THE OUTER CONTOUR POINTS
+
+-Then you enter the coordinates of the points that define your outer contour (the channel). One line for each point where you enter the number of thet point
+(starting with 1), the x coordinate of the point and y coordinate of the point.
+-After enter all the points, skip a line.
+
+DEFINING THE SEGMENTS TO DRAW THE OUTER CONTOUR
+
+-The segments are created by connecting the points with straight lines our circles arcs. Each segment should be written in different lines. First you enter the 
+numeration of the segment (starting with one) then the start point of this segment, then the end point of the segment, then radii of the arc connecting 
+both points or enter 0(zero) if the segment is straight and finally enter 0 if the segment is a wall (no slip conditon) -1 if it is the inlet of the cannel 
+and -2 if it is the outlet.
+-After enter all the points, skip a line.
+
+ENTERING THE BOUNDARY CONDITIONS
+
+-The boundary contions are deffined for each segment.
+-Each line correspond to a segment and it should keep the same order of the segments.
+-There is three types of boundary conditions: 0 -> velocity; 1 -> tension; 2 -> developed parabolic velocity profile
+-Each line is composed by 5 columns: 
+first column -> the numeration of the segment;
+second column -> the type of the bc in the x direction
+third column -> the value of the bc in the x direction
+fourth column -> the type of the bc in the y direction
+Fifth column -> the value of the bc in the y direction
+Obs.: if the segment has the bc type 2, the directions doesn't matter. It's gonna be always in the normal direction of the segment. In this way enter 2 
+for the second column, 3 for the medium velocity of the parabolic profile, and 0(zero) in the two others columns.
+-skip a line
+
+SEGMENTS DISCRETIZATION
+
+-Now we gonna define how many elements we want to devide each segment.
+-Each line corresponds to one segment and must contain two columns, beign the first the number of the segment and the second the number of elements 
+that this segment contains.
+-skip a line
+
+DROP DISCRETIZATION
+
+-This line contains the number of elements each drop will contain. All the drops of the simulation contains the same number of elments, independent of its radii.
+-skip a line
+
+SIMULATION VISCOSITY RATIO (Lambda)
+
+-This line contains the viscosity ratio of the problem (ratio between the drop fluid viscosity and the outer fluid viscosity).
+-skip a line
+
+SIMULATION CAPILLARY NUMBER (Ca)
+
+-This line contains the capillary number of the problem (ratio between the viscous forces and capillary forces).
+-skip a line
+
+DROPS LOCATIONS AND RADII
+
+-Finally you will enter the position and radius of each drop.
+-Each drop is discribed in each line.
+-You should enter with: the numeration of the drop, the x coordinate of its center, the y coordinate of its center and the radius of the drop.
+-skip a line.
+-save the .txt file.
+
+CREATING THE MESH
+
+-Once you are done with your input file, you run the program called Mesh inside of Create_Mesh_2D file.
+-A new file called output will be created.
+-Open the files wall_contour.plt and drop_contour.plt to verify if the channel and the drops have the desired geometry. 
+-If not repeat the all process carefully.
+-Once you get the desired geometries, copy the output file and paste it at Processor file.
+
+
+RUNNING THE PROCESSOR 
+
+-After pasting the output file in the Processing director, run the program Processor.
+-Some data will be createt in the .plt format, like: the curve of pressure over time, drop contour and flow rate error over time.
+

@@ -1,0 +1,65 @@
+!OUTER CONTOUR DATA
+12	12  	1	!n# of points !n# os segments !n# of drops 
+
+!SIMULATION PARAMETERS
+0.001	3.8	8000	!time step   !final position of the first node !max number of iterations
+
+1	0	0 !Defining the points 
+2	1	0 !(i# point, x_i, y_i)
+3 	1 	0.25
+4 	2 	0.25
+5 	2 	0
+6 	3 	0
+7 	3 	1
+8 	2 	1
+9 	2 	0.75
+10 	1 	0.75
+11 	1 	1
+12 	0 	1
+
+1.0 	1.0 	2.0 	 0.0	0.0 !conect the points to create the contour !(i# seg, pt1, pt2, segment shape, inlet(-1.0) or outlet(-2.0)
+2.0 	2.0 	3.0	 0.0    0.0 !(seg shape == 0 -> straight line, seg shape /= 0 -> radio of the circle segment)
+3.0 	3.0 	4.0	 0.0 	0.0 !(seg shape > 0 -> circle center on the left, seg shape< 0 -> circle center on the right)
+4.0 	4.0 	5.0 	 0.0    0.0
+5.0 	5.0 	6.0 	 0.0    0.0
+6.0 	6.0 	7.0 	 0.0   -2.0
+7.0 	7.0 	8.0 	 0.0    0.0
+8.0 	8.0 	9.0 	 0.0    0.0
+9.0 	9.0 	10.0 	 0.0    0.0
+10.0 	10.0 	11.0 	 0.0    0.0
+11.0 	11.0 	12.0 	 0.0    0.0
+12.0 	12.0 	1.0 	 0.0   -1.0
+        
+1.0 	0.0	0.0 	0.0 	0.0	!boundary condition on the segments
+2.0 	0.0 	0.0 	0.0 	0.0	!(i# seg, bc type on x direct, value of the bc, bc type on y dirct, value of the bc)
+3.0 	0.0 	0.0 	0.0 	0.0 	!(bc type = 0 --> velocity ; bc type = 1 --> tension ; bc type = 3 --> drop)
+4.0 	0.0 	0.0 	0.0 	0.0 	!bc type = 2 ---> parabolic
+5.0 	0.0 	0.0 	0.0 	0.0
+6.0 	1.0 	0.0 	1.0 	0.0
+7.0 	0.0 	0.0 	0.0 	0.0
+8.0 	0.0 	0.0 	0.0 	0.0
+9.0 	0.0 	0.0 	0.0 	0.0
+10.0 	0.0 	0.0 	0.0 	0.0
+11.0 	0.0 	0.0 	0.0 	0.0
+12.0 	2.0 	1.0 	0.0 	0.0
+
+1 	20 !Discretization of the mesh
+2 	5 !(i# segment, numebr of elements on the segment)
+3 	20
+4 	5
+5 	20
+6 	20
+7 	20
+8 	5
+9 	20
+10 	5
+11	20
+12	20
+
+40 !number of elements per drop (it might have at least 2 elements per drop)
+
+10.0 !viscosity ratio (lambda)
+
+1.0 !Capillary number (Ca)
+
+1	0.5	0.5	0.3 !drop geom (i# drop, x_c, y_c, radius)

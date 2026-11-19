@@ -1,0 +1,13 @@
+# Fortran build artifacts
+*.o
+*.mod
+build/
+
+# Temporary simulation output folders
+results/
+
+# Python / Jupyter cache
+__pycache__/
+*.py[cod]
+*$py.class
+.ipynb_checkpoints/
