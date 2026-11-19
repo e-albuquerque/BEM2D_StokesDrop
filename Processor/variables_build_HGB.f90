@@ -45,5 +45,9 @@ module var_build_HGB
     real, allocatable :: x_ptss_nd2p(:,:), jacobians_nd2p(:), norms_nd2p(:,:), tgs_nd2p(:,:), kappas_nd2p(:)
     real, allocatable :: x_ptss_nd2n(:,:), jacobians_nd2n(:), norms_nd2n(:,:), tgs_nd2n(:,:), kappas_nd2n(:)
     real, allocatable :: x_ptss_nd3(:,:), jacobians_nd3(:), norms_nd3(:,:), tgs_nd3(:,:), kappas_nd3(:)
+
+    !----STATIONARY WALL-TO-WALL INFLUENCE CACHE
+    integer :: n_wall_el, n_wall_nd
+    real, allocatable :: H_wall_cache(:,:), G_wall_cache(:,:)
     
 end module var_build_HGB

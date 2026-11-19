@@ -443,7 +443,16 @@ def create_input_file(filename, computed_data, type_bcs, val_bcs, input_params):
     Ca = float(input_params['Ca'])
     aH = float(input_params['aH'])
 
-    os.makedirs(os.path.dirname(os.path.abspath(filename)), exist_ok=True)
+    out_dir = os.path.dirname(os.path.abspath(filename))
+    os.makedirs(out_dir, exist_ok=True)
+
+    # Remove old simulation output .dat files in the target directory so runs never mix
+    for old_f in os.listdir(out_dir):
+        if old_f.endswith('.dat'):
+            try:
+                os.remove(os.path.join(out_dir, old_f))
+            except OSError:
+                pass
 
     with open(filename, 'w', encoding='utf-8') as f:
         # 1. Header: nnode, nele, ndrop

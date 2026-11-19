@@ -1,4 +1,5 @@
 subroutine alloc_memory_build_HGB
+    use global
     use var_build_HGB
     implicit none
     
@@ -32,5 +33,15 @@ subroutine alloc_memory_build_HGB
     allocate(radiuss_nd2p(npgs), rs_nd2p(npgs,2))
     allocate(radiuss_nd2n(npgs), rs_nd2n(npgs,2))
     allocate(radiuss_nd3(npgs), rs_nd3(npgs,2))
+
+    if (ndrop .gt. 0) then
+        n_wall_el = drop_f_elem - 1
+        n_wall_nd = drop_first_last_node(1, 2) - 1
+    else
+        n_wall_el = nele
+        n_wall_nd = nnode
+    end if
+    allocate(H_wall_cache(2*n_wall_nd, 2*n_wall_nd))
+    allocate(G_wall_cache(2*n_wall_nd, 6*n_wall_el))
     
 end subroutine 
