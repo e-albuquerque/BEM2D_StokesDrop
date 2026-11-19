@@ -71,11 +71,30 @@ O programa principal `Prossesing` em `Processing.f90` executa os seguintes passo
 
 ---
 
-## 2. Como Compilar o Solver Fortran (`Processor/Gota.exe`)
+## 2. Como Compilar o Solver Fortran (`Processor/Gota.exe` / `Processor/Gota`)
 
-Os passos abaixo foram validados no Windows com **GNU Fortran (`gfortran`) 16.2.0 (MSYS2 UCRT64)** e no Linux (Google Colab).
+O projeto inclui um **`Makefile`** na raiz que detecta automaticamente o sistema operacional:
+- **No Windows (`OS == Windows_NT`)**: gera `Processor/Gota.exe` com as flags `-static -Wl,--stack,536870912`;
+- **No Linux / macOS**: gera `Processor/Gota` vinculando dinamicamente `-fopenmp -llapack -lblas`.
+- Todos os objetos (`.o`) e módulos (`.mod`) são armazenados separadamente em `build/`.
 
-No PowerShell, dentro de `Processor/`:
+### 2.1. Compilação via `Makefile` (Recomendada)
+
+- **No Windows (PowerShell com MSYS2 UCRT64)**:
+  ```powershell
+  $env:PATH = "C:\msys64\ucrt64\bin;" + $env:PATH
+  mingw32-make clean
+  mingw32-make -j4
+  ```
+- **No Linux / Google Colab / macOS**:
+  ```bash
+  make clean
+  make -j4
+  ```
+
+### 2.2. Compilação manual direta com `gfortran` (Opcional)
+
+Caso prefira compilar manualmente sem `make`, execute dentro de `Processor/`:
 
 ```powershell
 $env:PATH = "C:\msys64\ucrt64\bin;" + $env:PATH
