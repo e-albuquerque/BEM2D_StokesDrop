@@ -508,16 +508,16 @@ def create_input_file(filename, computed_data, type_bcs, val_bcs, input_params):
     print(f"Input file '{filename}' generated successfully ({nnode} nodes, {nele} elements, {ndrop} drop(s)).")
 
 
-def run_preprocessor(problem=2, output_path=None, plot_path='geometry.png'):
+def run_preprocessor(problem=2, max_it=None, output_path=None, plot_path='geometry.png'):
     """
     Runs the complete Python preprocessing pipeline for the selected problem:
-      1. Reads problem definition from `input_data(problem)`;
+      1. Reads problem definition from `input_data(problem, max_it=max_it)`;
       2. Generates/loads `<file_name>.msh` from `<file_name>.geo` via Gmsh + meshio;
       3. Evaluates nodal boundary conditions (including Poiseuille parabolic inlet);
       4. Plots the Gmsh mesh and boundary conditions to `plot_path`;
       5. Writes the Fortran solver input file (`Processor/output.txt`).
     """
-    inp_data = input_data(problem)
+    inp_data = input_data(problem, max_it=max_it)
     computed_data = compute_inodes(inp_data['file_name'], inp_data['bound_cond'])
     type_bcs, val_bcs = mount_bcs(
         computed_data['segments'],
@@ -568,5 +568,11 @@ if __name__ == '__main__':
         default='geometry.png',
         help="Path to save the mesh and boundary conditions figure (default: geometry.png).",
     )
+    parser.add_argument(
+        '-n', '--max-it',
+        type=int,
+        default=None,
+        help="Optional override for number of time steps (default: uses max_it from input_data.py).",
+    )
     args = parser.parse_args()
-    run_preprocessor(problem=args.problem, output_path=args.output, plot_path=args.plot)
+    run_preprocessor(problem=args.problem, max_it=args.max_it, output_path=args.output, plot_path=args.plot)
