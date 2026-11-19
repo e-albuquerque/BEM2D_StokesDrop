@@ -197,7 +197,7 @@ def plot_drop_evolution(inp, out, save_path=os.path.join('examples', 'fig1_evolu
     ax1.set_ylabel('$y / H$')
     ax1.set_aspect('equal', adjustable='box')
     ax1.grid(True, linestyle=':', alpha=0.45)
-    ax1.legend(loc='upper right', fontsize=7.8, ncol=2)
+    ax1.legend(loc='upper center', bbox_to_anchor=(0.5, -0.26), fontsize=8.0, ncol=6, framealpha=0.95)
 
     if snaps:
         t_first, t_last = snaps[0][0], snaps[-1][0]
@@ -208,11 +208,11 @@ def plot_drop_evolution(inp, out, save_path=os.path.join('examples', 'fig1_evolu
     ax2.set_ylabel('$y / H$')
     ax2.set_aspect('equal', adjustable='box')
     ax2.grid(True, linestyle=':', alpha=0.45)
-    ax2.legend(loc='best', fontsize=7.8, ncol=2)
+    ax2.legend(loc='upper center', bbox_to_anchor=(0.5, -0.32), fontsize=8.0, ncol=5, framealpha=0.95)
 
     os.makedirs(os.path.dirname(os.path.abspath(save_path)), exist_ok=True)
     fig.tight_layout()
-    fig.savefig(save_path, dpi=150)
+    fig.savefig(save_path, dpi=150, bbox_inches='tight')
     plt.close(fig)
     print(f"Drop evolution plot saved to '{save_path}'.")
 
@@ -346,7 +346,13 @@ def plot_summary_dashboard(
     axs[0, 1].set_ylabel('$y / H$')
     axs[0, 1].set_aspect('equal', adjustable='box')
     axs[0, 1].grid(True, linestyle=':', alpha=0.45)
-    axs[0, 1].legend(loc='best', fontsize=7.8, ncol=2)
+    axs[0, 1].legend(
+        loc='upper center',
+        bbox_to_anchor=(0.5, -0.34),
+        fontsize=8.0,
+        ncol=5,
+        framealpha=0.95,
+    )
 
     # Panel (c): Driving pressure evolution
     axs[1, 0].plot(press[:, 0], press[:, 1], '-', color='#1f78b4', lw=2.0)

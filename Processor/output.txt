@@ -1,6 +1,6 @@
        440       220         1        #number of nodes, elements and drops
  
-         0.0010000         3.8000000      8000   #time step, max drop position and max iteration
+         0.0010000         3.8000000      1000   #time step, max drop position and max iteration
  
  NODES COORDINATES (i# node, x, y)
  

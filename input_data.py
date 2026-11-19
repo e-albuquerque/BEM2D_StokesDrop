@@ -56,7 +56,7 @@ def input_data(problem=2, max_it=None):
         title = 'STRAIGHT MICROCHANNEL WITH DEFORMABLE DROP (dad_1)'
         dt = 0.001               # Passo de tempo (Delta t)
         max_pos = 9.5            # Posição x máxima de parada da gota
-        max_it = 5000              # Número de passos de tempo (use 5000 para travessia completa)
+        max_it = 2000              # Número de passos de tempo (use 5000 para travessia completa)
         lamb = 1.0               # Razão de viscosidade (lambda = mu_gota / mu_fluido)
         Ca = 0.1                 # Número capilar (Ca = mu * V_m / sigma)
         aH = 0.50                # Razão de confinamento (a/H = 2*R / H)
@@ -67,7 +67,7 @@ def input_data(problem=2, max_it=None):
         title = 'CONSTRICTED MICROCHANNEL H/h=2 WITH DEFORMABLE DROP (dad_2)'
         dt = 0.001               # Passo de tempo (Delta t)
         max_pos = 3.8            # Posição x máxima de parada da gota
-        max_it = 8000              # Número de passos de tempo (use 8000 para travessia completa)
+        max_it = 1000              # Número de passos de tempo (use 8000 para travessia completa)
         lamb = 10.0              # Razão de viscosidade (lambda = mu_gota / mu_fluido)
         Ca = 1.0                 # Número capilar (Ca = mu * V_m / sigma)
         aH = 0.60                # Razão de confinamento (a/H = 2*R / H)
@@ -78,7 +78,7 @@ def input_data(problem=2, max_it=None):
         title = 'CONSTRICTED MICROCHANNEL H/h=4 WITH DEFORMABLE DROP (dad_3)'
         dt = 0.0025              # Passo de tempo (Delta t)
         max_pos = 5.8            # Posição x máxima de parada da gota
-        max_it = 8000              # Número de passos de tempo (use 8000 para travessia completa)
+        max_it = 1000              # Número de passos de tempo (use 8000 para travessia completa)
         lamb = 10.0              # Razão de viscosidade (lambda = mu_gota / mu_fluido)
         Ca = 1.0                 # Número capilar (Ca = mu * V_m / sigma)
         aH = 0.30                # Razão de confinamento (a/H = 2*R / H)
