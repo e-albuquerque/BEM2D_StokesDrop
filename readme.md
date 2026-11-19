@@ -16,9 +16,11 @@ O fluxo de trabalho segue o mesmo padrão modular do projeto `BEM2D_elastostatic
    - Gera a malha quadrática de 2ª ordem (`line3` no contorno e `triangle6` no domínio) a partir dos arquivos de geometria do Gmsh (`dad_1.geo`, `dad_2.geo`, `dad_3.geo`);
    - Lê o arquivo `.msh` com `meshio`, encadeia os elementos de contorno do canal (no sentido anti-horário) e da interface da gota (no sentido horário a partir de $\theta = 0$), aplica as condições de contorno (incluindo o perfil parabólico de Poiseuille na entrada), plota a malha e as condições de contorno (`geometry.png`) e grava o arquivo `Processor/output.txt`.
 2. **Solver BEM Transiente em Fortran 90 (`Processor/Processing.f90` → `Processor/Gota.exe`)**:
-   - Lê `Processor/output.txt`, monta as matrizes de influência `H`, `G` e `B` em paralelo com **OpenMP**, resolve o sistema linear denso via **LAPACK (`dgesv`)** em cada subetapa do esquema preditor-corretor de 2ª ordem, evolui a interface da gota e exporta séries temporais e perfis em formato Tecplot `.plt`.
+   - Lê `Processor/output.txt`, monta as matrizes de influência `H`, `G` e `B` em paralelo com **OpenMP**, resolve o sistema linear denso via **LAPACK (`dgesv`)** em cada subetapa do esquema preditor-corretor de 2ª ordem, evolui a interface da gota e exporta séries temporais e perfis em arquivos de dados `.dat`.
+3. **Pós-processador em Python (`posproc.py`)**:
+   - Lê os arquivos `.dat` exportados pelo solver Fortran (`pressure.dat`, `flow_error.dat`, `area_error.dat`, `wall_contour.dat`, `drop_t=*.dat`), imprime o resumo de validação numérica e gera os gráficos com `matplotlib` na pasta `examples/`.
 
-### 1.1. Pré-processamento em Python (`input_data.py`, `preproc.py` e `*.geo`)
+### 1.1. Pré-processamento e Pós-processamento em Python (`input_data.py`, `preproc.py`, `posproc.py` e `*.geo`)
 
 | Arquivo | Função |
 | --- | --- |
@@ -27,6 +29,7 @@ O fluxo de trabalho segue o mesmo padrão modular do projeto `BEM2D_elastostatic
 | `dad_3.geo` | Geometria Gmsh do Problema 3: microcapilar longo com constrição severa ($L = 6H$, $H/h = 4$) com 1 gota ($R = 0,15$, $a/H = 0,30$), `820` elementos quadráticos (`1640` nós). |
 | `input_data.py` | Define a função `input_data(problem=2)`, retornando os parâmetros físicos ($\lambda$, $\text{Ca}$, $a/H$), parâmetros temporais ($\Delta t$, `max_pos`, `max_it`), o nome do arquivo `.geo`/`.msh` e o dicionário `bound_cond` associando as `Physical Curve` do Gmsh (`"wall"`, `"outlet"`, `"inlet"`, `"drop_1"`) às condições de contorno. |
 | `preproc.py` | Executa o Gmsh (`ensure_mesh_exists`), lê `<caso>.msh` via `meshio` (`compute_inodes`), calcula as condições de contorno nodais (`mount_bcs`), gera o gráfico da malha e condições de contorno (`show_geometry` → `geometry.png`) e escreve `Processor/output.txt` (`create_input_file`). |
+| `posproc.py` | Lê `output.txt` (`read_solver_input`) e os arquivos `.dat` do solver (`read_solver_outputs`), exibe o resumo quantitativo de validação (`print_validation_summary`) e plota as figuras de evolução da gota, pressão motriz, erros de conservação e painel resumo 2x2 (`run_postprocessor`). |
 
 #### Tipos de condições de contorno em `input_data.py` (`bound_cond`)
 - `type_x, type_y = 0`: velocidade prescrita nas direções globais $x$ ou $y$ ($u_x, u_y$);
@@ -65,7 +68,7 @@ O programa principal `Prossesing` em `Processing.f90` executa os seguintes passo
 3. **Diagnósticos, saída e realocação de nós**:
    - `flow_error.f90`: calcula o erro percentual de conservação de vazão (`flow_err`) integrando velocidades na entrada e na saída pela regra de Simpson.
    - `driver_pressure.f90`: calcula a diferença de tração normal média entre entrada e saída (`d_pressure`).
-   - `tecplot_contour.f90`: grava `pressure.plt`, `flow_error.plt` e `area_error.plt` em todo passo, além de `wall_contour.plt` e `drop_t=XXXXX.plt` no passo 1 e a cada 10 passos.
+   - `write_output.f90`: grava `pressure.dat`, `flow_error.dat` e `area_error.dat` em todo passo, além de `wall_contour.dat` e `drop_t=XXXXX.dat` no passo 1 e a cada 10 passos.
    - `nodes_relocation.f90`: chamada duas vezes ao final de cada passo para reposicionar os nós dos elementos da gota segundo Wrobel et al. (2009), evitando distorção excessiva da malha.
    - **Critério de parada**: encerra antes de `max_it` se `xnode(drop_first_last_node(1,2), 2) > max_pos`.
 
@@ -110,7 +113,7 @@ gfortran -O3 -march=native -fopenmp -fdefault-real-8 -fdefault-double-8 -static 
   Gauss_Legendre.f90 Gauss_Logaritimic.f90 geometric_parameters.f90 mat_prod_2x2_2x6.f90 `
   nodes_relocation.f90 prod_Axb.f90 read_input.f90 regular_integral.f90 reorganize.f90 `
   shape_functions.f90 shape_functions_sing.f90 sing_integral.f90 sing_reg_integral.f90 `
-  tecplot_contour.f90 transform_eta_qsi.f90 write_HGB.f90 write_matA.f90 Processing.f90 `
+  write_output.f90 transform_eta_qsi.f90 write_HGB.f90 write_matA.f90 Processing.f90 `
   -llapack -lblas -o Gota.exe
 ```
 
@@ -153,12 +156,20 @@ cd ".\Processor"
 .\Gota.exe
 ```
 
+### Passo 4 — Executar o pós-processador Python (`posproc.py`)
+
+Na raiz do projeto, execute `posproc.py` para imprimir o resumo de validação e gerar todas as figuras em `examples/`:
+
+```powershell
+python posproc.py
+```
+
 ### Arquivos de saída gerados em `Processor/`
 
 | Arquivo | Conteúdo | Frequência de atualização |
 | --- | --- | --- |
-| `pressure.plt` | Duas colunas: tempo `t` e queda de pressão média `d_pressure` entre entrada e saída. | Todo passo |
-| `flow_error.plt` | Duas colunas: tempo `t` e erro relativo percentual da vazão (`(Q_out - Q_in)/Q_in * 100`). | Todo passo |
-| `area_error.plt` | Duas colunas: tempo `t` e erro relativo percentual da área da gota (`(A - A_ini)/A_ini * 100`). | Todo passo |
-| `wall_contour.plt` | Coordenadas `(x, y)` dos nós do canal. | Passo 1 e a cada 10 passos |
-| `drop_t=<t_ms>.plt` | Coordenadas `(x, y)` do contorno da gota no instante `nint(t * 1000)` em milésimos adimensionais (ex.: `drop_t=  125.plt` para `t = 0.125`). | Passo 1 e a cada 10 passos |
+| `pressure.dat` | Duas colunas: tempo `t` e queda de pressão média `d_pressure` entre entrada e saída. | Todo passo |
+| `flow_error.dat` | Duas colunas: tempo `t` e erro relativo percentual da vazão (`(Q_out - Q_in)/Q_in * 100`). | Todo passo |
+| `area_error.dat` | Duas colunas: tempo `t` e erro relativo percentual da área da gota (`(A - A_ini)/A_ini * 100`). | Todo passo |
+| `wall_contour.dat` | Coordenadas `(x, y)` dos nós do canal. | Passo 1 e a cada 10 passos |
+| `drop_t=<t_ms>.dat` | Coordenadas `(x, y)` do contorno da gota no instante `nint(t * 1000)` em milésimos adimensionais (ex.: `drop_t=  125.dat` para `t = 0.125`). | Passo 1 e a cada 10 passos |

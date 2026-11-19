@@ -70,7 +70,7 @@ SUB_OBJS := \
 	$(BUILD_DIR)/shape_functions_sing.o \
 	$(BUILD_DIR)/sing_integral.o \
 	$(BUILD_DIR)/sing_reg_integral.o \
-	$(BUILD_DIR)/tecplot_contour.o \
+	$(BUILD_DIR)/write_output.o \
 	$(BUILD_DIR)/transform_eta_qsi.o \
 	$(BUILD_DIR)/write_HGB.o \
 	$(BUILD_DIR)/write_matA.o \

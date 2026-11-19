@@ -1,11 +1,11 @@
 module global
     
     character (len=30) :: inputfilename
-    character (len=30) :: tecplot_file_wall
-    character (len=30) :: tecplot_file_drop
-    character (len=30) :: tecplot_file_press
-    character (len=30) :: tecplot_file_flowerr
-    character (len=30) :: tecplot_file_areaerr
+    character (len=30) :: out_file_wall
+    character (len=30) :: out_file_drop
+    character (len=30) :: out_file_press
+    character (len=30) :: out_file_flowerr
+    character (len=30) :: out_file_areaerr
       
     integer :: nnode
     integer :: nele

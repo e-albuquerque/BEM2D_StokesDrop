@@ -62,8 +62,8 @@ program Prossesing
         !calc the driver pressure
         call driver_pressure
         
-        !writing files to plot the curves on tecplot
-        call tecplot_contour(t)
+        !writing output data files for post-processing
+        call write_output(t)
         
         !       REALOCATING THE NODES
         call nodes_relocation
