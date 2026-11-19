@@ -11,6 +11,8 @@ program Prossesing
     !finding the first element of the drops
     call first_drop_elem
     
+    t1 = omp_get_wtime()
+    write(*,'(A,I0)') 'number of processors = ', omp_get_max_threads()
     
     t = 0.0d0
     
@@ -63,6 +65,8 @@ program Prossesing
         
     end do
     write(*,*)
+    t2 = omp_get_wtime()
+    write(*,'(A,F0.3,A)') 'processing time = ', t2 - t1, ' s'
     
     
 !100 format(i3,f12.6)
