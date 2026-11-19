@@ -16,37 +16,25 @@ program Prossesing
     
     do iterations=1,max_it
 
-        print*, iterations
+        write(*,'(A,I0,A,I0)') 'time step = ', iterations, '/', max_it
         
-        t1 = omp_get_wtime()
         t = t+dt
         
         do imp_evol = 1,2
 
             !       CREATING THE MATRICES H, G and B
-            print*, 'building_HGB_sing (OpenMP)'
             call building_HGB_sing
-            !call write_HGB
             
             !       APPLYING THE BOUNDARY CONDITIONS
-            print*,'apply_bc2'
-            call apply_bc2 !so far so good
-            
-            !call write_matA
-            
+            call apply_bc2
             
             !       SOLVING THE SYSTEM (LAPACK dgesv)
-            print*, 'solve_lapack (dgesv)'
             call solve_lapack(2*nnode, matA, vector_b, sol)
-            !call Conj_grad(2*nnode, matA, vector_b, sol)
-            !call BCGS(2*nnode, matA, vector_b, sol)
             
             !       REORGANIZNG VELOCITIES AND TENSIONS
-            print*, 'reorganize'
             call reorganize
             
             !       DROPLET EVOLUTION
-            print*,'Droplet evolution'
             if(ndrop .ne. 0)then
                 if(imp_evol .eq. 1)then
                     call evolution_euler !first order
@@ -68,10 +56,6 @@ program Prossesing
         !       REALOCATING THE NODES
         call nodes_relocation
         call nodes_relocation
-        !call nodes_relocation
-        !computational time per iteration        
-        t2 = omp_get_wtime()
-        write(*,*)'time = ', t2 - t1
         
         !conditon to know if the drop is almost in  the end of the channel
         if(xnode(drop_first_last_node(1,2),2) .gt. max_pos)exit
