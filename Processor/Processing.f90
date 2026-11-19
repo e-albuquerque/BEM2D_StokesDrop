@@ -16,7 +16,8 @@ program Prossesing
     
     do iterations=1,max_it
 
-        write(*,'(A,I0,A,I0)') 'time step = ', iterations, '/', max_it
+        write(*,'(A,A,I0,A,I0)', advance='no') achar(13), 'time step = ', iterations, '/', max_it
+        call flush(6)
         
         t = t+dt
         
@@ -61,6 +62,7 @@ program Prossesing
         if(xnode(drop_first_last_node(1,2),2) .gt. max_pos)exit
         
     end do
+    write(*,*)
     
     
 !100 format(i3,f12.6)
