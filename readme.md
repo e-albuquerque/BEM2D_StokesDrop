@@ -17,10 +17,11 @@ O fluxo de trabalho segue o mesmo padrão modular do projeto `BEM2D_elastostatic
    - Lê o arquivo `.msh` com `meshio`, encadeia os elementos de contorno do canal (no sentido anti-horário) e da interface da gota (no sentido horário a partir de $\theta = 0$), aplica as condições de contorno (incluindo o perfil parabólico de Poiseuille na entrada), plota a malha e as condições de contorno (`geometry.png`) e grava o arquivo `Processor/output.txt`.
 2. **Solver BEM Transiente em Fortran 90 (`Processor/Processing.f90` → `Processor/Gota.exe`)**:
    - Lê `Processor/output.txt`, monta as matrizes de influência `H`, `G` e `B` em paralelo com **OpenMP**, resolve o sistema linear denso via **LAPACK (`dgesv`)** em cada subetapa do esquema preditor-corretor de 2ª ordem, evolui a interface da gota e exporta séries temporais e perfis em arquivos de dados `.dat`.
-3. **Pós-processador em Python (`posproc.py`)**:
-   - Lê os arquivos `.dat` exportados pelo solver Fortran (`pressure.dat`, `flow_error.dat`, `area_error.dat`, `wall_contour.dat`, `drop_t=*.dat`), imprime o resumo de validação numérica e gera os gráficos com `matplotlib` na pasta `examples/`.
+3. **Pós-processador e Animação em Python (`posproc.py` e `animate_drop.py`)**:
+   - `posproc.py` lê os arquivos `.dat` exportados pelo solver Fortran (`pressure.dat`, `flow_error.dat`, `area_error.dat`, `wall_contour.dat`, `drop_t=*.dat`), imprime o resumo de validação numérica e gera os gráficos com `matplotlib` na pasta `examples/`;
+   - `animate_drop.py` gera um vídeo de animação (`examples/drop_animation.mp4`, com opção ou fallback para `.gif`) mostrando a gota atravessando o microcapilar sincronizada com a curva de pressão motriz $\Delta P(t)$.
 
-### 1.1. Pré-processamento e Pós-processamento em Python (`input_data.py`, `preproc.py`, `posproc.py` e `*.geo`)
+### 1.1. Pré-processamento, Pós-processamento e Animação em Python (`input_data.py`, `preproc.py`, `posproc.py`, `animate_drop.py` e `*.geo`)
 
 | Arquivo | Função |
 | --- | --- |
@@ -30,6 +31,7 @@ O fluxo de trabalho segue o mesmo padrão modular do projeto `BEM2D_elastostatic
 | `input_data.py` | Define a função `input_data(problem=2)`, retornando os parâmetros físicos ($\lambda$, $\text{Ca}$, $a/H$), parâmetros temporais ($\Delta t$, `max_pos`, `max_it`), o nome do arquivo `.geo`/`.msh` e o dicionário `bound_cond` associando as `Physical Curve` do Gmsh (`"wall"`, `"outlet"`, `"inlet"`, `"drop_1"`) às condições de contorno. |
 | `preproc.py` | Executa o Gmsh (`ensure_mesh_exists`), lê `<caso>.msh` via `meshio` (`compute_inodes`), calcula as condições de contorno nodais (`mount_bcs`), gera o gráfico da malha e condições de contorno (`show_geometry` → `geometry.png`) e escreve `Processor/output.txt` (`create_input_file`). |
 | `posproc.py` | Lê `output.txt` (`read_solver_input`) e os arquivos `.dat` do solver (`read_solver_outputs`), exibe o resumo quantitativo de validação (`print_validation_summary`) e plota as figuras de evolução da gota, pressão motriz, erros de conservação e painel resumo 2x2 (`run_postprocessor`). |
+| `animate_drop.py` | Gera animação em vídeo MP4 (via FFmpeg / `imageio-ffmpeg`) ou GIF (via Pillow) da gota se deformando ao longo do canal sincronizada com a evolução da queda de pressão $\Delta P(t)$ (`examples/drop_animation.mp4`). |
 
 #### Tipos de condições de contorno em `input_data.py` (`bound_cond`)
 - `type_x, type_y = 0`: velocidade prescrita nas direções globais $x$ ou $y$ ($u_x, u_y$);
@@ -131,7 +133,7 @@ gfortran -O3 -march=native -fopenmp -fdefault-real-8 -fdefault-double-8 -static 
 ### Passo 1 — Instalar dependências Python (se necessário)
 
 ```powershell
-pip install numpy matplotlib meshio gmsh
+pip install numpy matplotlib meshio gmsh imageio-ffmpeg
 ```
 
 ### Passo 2 — Executar o pré-processador Python (`preproc.py`)
@@ -156,13 +158,25 @@ cd ".\Processor"
 .\Gota.exe
 ```
 
-### Passo 4 — Executar o pós-processador Python (`posproc.py`)
+### Passo 4 — Executar o pós-processador (`posproc.py`) e gerar animação em vídeo (`animate_drop.py`)
 
-Na raiz do projeto, execute `posproc.py` para imprimir o resumo de validação e gerar todas as figuras em `examples/`:
+Na raiz do projeto, execute `posproc.py` para imprimir o resumo de validação e gerar todas as figuras estáticas em `examples/`:
 
 ```powershell
 python posproc.py
 ```
+
+Para gerar o vídeo de animação (`examples/drop_animation.mp4`) da gota atravessando o canal sincronizada com $\Delta P(t)$:
+
+```powershell
+python animate_drop.py
+```
+
+Opções disponíveis em `animate_drop.py`:
+- `--fps <int>`: quadros por segundo (padrão: `15`);
+- `--dpi <int>`: resolução em DPI (padrão: `150`);
+- `--gif`: exporta também uma versão em GIF além do MP4;
+- `-r <dir>` / `-o <arquivo>`: permite escolher outra pasta de resultados ou nome de saída.
 
 ### Arquivos de saída gerados em `Processor/`
 
